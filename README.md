@@ -103,7 +103,7 @@ Please fork the repo, make changes, and create a pull request. For major changes
 👩‍💻 Author 
 ✨ Neelam Likhitha
  🎓 Full stack @Brain O Vision. 
-🌐 LinkedIn www.linkedin.com/in/neelam-likhitha-b9945a295 
+🌐 LinkedIn https://www.linkedin.com/in/neelam-likhitha-2a74a3296
 📧 Mail: likitha0612@gmail.com 
 💻 Passionate about AI | ML | Fullstack | Innovation
 
