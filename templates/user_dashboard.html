@@ -17,6 +17,30 @@
     <h2>Welcome, {{ current_user.id }}</h2>
     <p>This is your user dashboard where you can raise complaints and track responses.</p>
     <a href="/complaint" class="btn btn-primary">Raise a Complaint</a>
+
+    <h3 class="mt-5">Your Complaints</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Complaint</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                <tr>
+                    <td>{{ complaint.complaint }}</td>
+                    <td>{{ complaint.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2">You have not submitted any complaints yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </body>

@@ -1,9 +1,13 @@
 # app.py (Main Flask Application)
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from bson import ObjectId
+from bson.errors import InvalidId
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+
+COMPLAINT_STATUSES = ("Pending", "In Progress", "Resolved")
 
 app = Flask(__name__)
 app.secret_key = os.environ["SECRET_KEY"]
@@ -87,7 +91,10 @@ def user_dashboard():
     if current_user.role != 'user':
         flash("Access Denied!", "danger")
         return redirect(url_for('home'))
-    return render_template('user_dashboard.html', username=current_user.id)
+    complaints = list(db.complaints.find({'user': current_user.id}))
+    for complaint in complaints:
+        complaint.setdefault('status', 'Pending')
+    return render_template('user_dashboard.html', username=current_user.id, complaints=complaints)
 
 # Admin Dashboard
 @app.route('/admin_dashboard')
@@ -96,8 +103,39 @@ def admin_dashboard():
     if current_user.role != 'admin':
         flash("Access Denied!", "danger")
         return redirect(url_for('home'))
-    complaints = db.complaints.find()
+    complaints = list(db.complaints.find())
+    for complaint in complaints:
+        complaint.setdefault('status', 'Pending')
     return render_template('admin_dashboard.html', complaints=complaints)
+
+# Update Complaint Status
+@app.route('/admin/complaints/<complaint_id>/status', methods=['POST'])
+@login_required
+def update_complaint_status(complaint_id):
+    if current_user.role != 'admin':
+        flash("Access Denied!", "danger")
+        return redirect(url_for('home'))
+
+    status = request.form.get('status')
+    if status not in COMPLAINT_STATUSES:
+        flash("Invalid complaint status.", "danger")
+        return redirect(url_for('admin_dashboard'))
+
+    try:
+        complaint_object_id = ObjectId(complaint_id)
+    except (InvalidId, TypeError):
+        flash("Complaint not found.", "danger")
+        return redirect(url_for('admin_dashboard'))
+
+    result = db.complaints.update_one(
+        {'_id': complaint_object_id},
+        {'$set': {'status': status}}
+    )
+    if result.matched_count == 0:
+        flash("Complaint not found.", "danger")
+    else:
+        flash("Complaint status updated successfully.", "success")
+    return redirect(url_for('admin_dashboard'))
 
 # Submit Complaint
 @app.route('/complaint', methods=['GET', 'POST'])
@@ -105,9 +143,15 @@ def admin_dashboard():
 def complaint_page():
     if request.method == 'POST':
         complaint_text = request.form['complaint']
-        db.complaints.insert_one({'user': current_user.id, 'complaint': complaint_text})
+        db.complaints.insert_one({
+            'user': current_user.id,
+            'complaint': complaint_text,
+            'status': 'Pending'
+        })
         flash("Complaint submitted successfully!", "success")
     complaints = list(db.complaints.find())
+    for complaint in complaints:
+        complaint.setdefault('status', 'Pending')
     return render_template('complaints.html', complaints=complaints)
 
 # Queries & Chatbot
