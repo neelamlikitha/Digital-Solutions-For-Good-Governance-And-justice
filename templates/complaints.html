@@ -44,7 +44,7 @@
     <h3 class="mt-5">All Complaints</h3>
     <ul class="list-group">
         {% for complaint in complaints %}
-            <li class="list-group-item">{{ complaint.complaint }}</li>
+            <li class="list-group-item"><strong>{{ complaint.user }}</strong>: {{ complaint.complaint }}</li>
         {% endfor %}
     </ul>
 </div>

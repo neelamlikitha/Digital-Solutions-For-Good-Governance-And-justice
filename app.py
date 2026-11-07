@@ -107,7 +107,8 @@ def complaint_page():
         complaint_text = request.form['complaint']
         db.complaints.insert_one({'user': current_user.id, 'complaint': complaint_text})
         flash("Complaint submitted successfully!", "success")
-    return render_template('complaints.html')
+    complaints = list(db.complaints.find())
+    return render_template('complaints.html', complaints=complaints)
 
 # Queries & Chatbot
 @app.route('/queries')
