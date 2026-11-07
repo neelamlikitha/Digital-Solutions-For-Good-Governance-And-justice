@@ -1,0 +1,12 @@
+{% include 'home.html' %}
+<div class="container mt-5">
+    <h2 class="text-center">Chatbot Assistance</h2>
+    <p class="text-center">Ask your questions below, and our AI chatbot will help you.</p>
+    <div class="chat-container">
+        <input type="text" id="chatbox" class="form-control" placeholder="Ask a question...">
+        <button class="btn btn-success mt-2" onclick="sendMessage()">Send</button>
+        <div id="chat-response" class="mt-3"></div>
+    </div>
+</div>
+
+<script src="/static/chatbot.js"></script>

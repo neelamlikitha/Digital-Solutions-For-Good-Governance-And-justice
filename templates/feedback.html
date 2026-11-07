@@ -1,0 +1,26 @@
+{% include 'home.html' %}
+
+<div class="container mt-5">
+    <h2 class="text-center">Feedback</h2>
+
+    <!-- Feedback Form -->
+    <div class="form-background">
+        <div class="form-container">
+            <h3>Submit Your Feedback</h3>
+            <form method="POST">
+                <div class="form-group">
+                    <textarea name="feedback" class="form-control" placeholder="Write your feedback here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-custom mt-3">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display Feedback -->
+    <h3 class="mt-5 text-center">All Feedback</h3>
+    <ul class="list-group mt-3">
+        {% for feedback in feedback_list %}
+            <li class="list-group-item"><strong>{{ feedback.user }}:</strong> {{ feedback.feedback }}</li>
+        {% endfor %}
+    </ul>
+</div>
